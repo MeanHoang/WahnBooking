@@ -3,6 +3,7 @@ const path = require('path');
 require('dotenv').config();
 const configViewEngine = require('./config/viewEngine');
 const webRoutes = require('./routes/web');
+const connectDB = require('./config/connectDB');
 
 const app = express()
 
@@ -18,6 +19,9 @@ configViewEngine(app);
 
 //declare routes
 app.use('/', webRoutes);
+
+//connectDB
+connectDB();
 
 app.listen(port, hostname, () => {
     console.log(`Example app listening on port ${port}`)
