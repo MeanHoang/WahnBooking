@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path');
 require('dotenv').config();
 const configViewEngine = require('./config/viewEngine');
+const webRoutes = require('./routes/web');
 
 const app = express()
 
@@ -15,10 +16,9 @@ app.use(express.urlencoded({ extended: true })) // for form data
 //config view, template engine
 configViewEngine(app);
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+//declare routes
+app.use('/', webRoutes);
 
-app.listen(port, () => {
+app.listen(port, hostname, () => {
     console.log(`Example app listening on port ${port}`)
 })
