@@ -1,6 +1,7 @@
 const db = require('../models/index.js');
 const {
-    createdNewUser
+    createdNewUser, getAllUser, getUserById,
+    updateUserData, deleteUserById
 } = require('../services/CRUDService.js');
 
 const getHomepage = async (req, res) => {
@@ -9,7 +10,7 @@ const getHomepage = async (req, res) => {
 
 const getListUser = async (req, res) => {
     try {
-        let data = await db.User.findAll();
+        let data = await getAllUser();
         //console.log("check data user: ", data);
         return res.render('User/listUser.ejs', { Users: data });
     } catch (error) {
@@ -22,7 +23,17 @@ const getAddUser = async (req, res) => {
 }
 
 const getUpdateUser = async (req, res) => {
-    res.render('let wait update');
+    // console.log("check  req.", req.query);
+    // req.params and req.query
+    let id = req.params.id;
+    if (id) {
+        let user = await getUserById(id);
+        console.log("check user:", user);
+        return res.render('User/updateUser.ejs', { Users: user });
+    }
+    else {
+        return res.send('NOT FOUND USERS!');
+    }
 }
 
 const postAddUser = async (req, res) => {
@@ -30,10 +41,30 @@ const postAddUser = async (req, res) => {
     console.log(message);
     res.redirect('/listUser');
 }
+
+const postUpdateUser = async (req, res) => {
+    console.log("check req.body:", req.body);
+    let data = req.body;
+    await updateUserData(data);
+    res.redirect('/listUser');
+}
+
+const postDeleteUser = async (req, res) => {
+    let id = req.params.id;
+    if (id) {
+        await deleteUserById(id);
+        res.send("Delete succed!");
+    } else {
+        res.send("NOT FOUND USER!");
+    }
+    await deleteUserById(id);
+}
 module.exports = {
     getHomepage,
     getListUser,
     getAddUser,
     getUpdateUser,
-    postAddUser
+    postAddUser,
+    postUpdateUser,
+    postDeleteUser
 }

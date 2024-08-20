@@ -1,5 +1,7 @@
+const { response } = require('express');
 const db = require('../models/index.js');
 const bcrypt = require('bcryptjs');
+const { where } = require('sequelize');
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -38,6 +40,75 @@ let hashUserPassword = async (password) => {
     });
 }
 
+let getAllUser = async () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let users = db.User.findAll();
+            resolve(users);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
+let updateUserData = async (data) => {
+    console.log("check data:", data);
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: data.id }
+            })
+            if (user) {
+                user.firstName = data.firstname;
+                user.lastName = data.lastname;
+                user.address = data.address;
+                user.phonenumber = data.phonenumber;
+
+                await user.save();
+                resolve();
+            } else {
+                resolve();
+            }
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
+let getUserById = async (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: id },
+                raw: true,
+            });
+            resolve(user);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
+let deleteUserById = async (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: userId }
+            })
+            if (user) {
+                await user.destroy();
+            }
+
+            resolve(); //return;
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
 module.exports = {
-    createdNewUser
+    createdNewUser,
+    getAllUser,
+    getUserById,
+    updateUserData,
+    deleteUserById
 }
